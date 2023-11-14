@@ -1,18 +1,16 @@
+import  axios  from 'axios'
 import { useEffect, useState } from 'react'
 import Header from './components/Header'
 import Modal from './components/Modal'
 import NewExpenseIcon from './assets/img/nuevo-gasto.svg'
 import ExpensesList from './components/ExpensesList'
 import Filters from './components/Filters'
-import {generateId} from './helpers'
+
+const API_BASE_URL = 'http://localhost:3000/api/v1'
 
 function App() {
-  const [expenses, setExpenses] = useState(
-    localStorage.getItem('expenses') ? JSON.parse(localStorage.getItem('expenses')) : []
-  )
-  const [budget, setBudget] = useState(
-    Number(localStorage.getItem('budget')) ?? 0
-  )
+  const [expenses, setExpenses] = useState([])
+  const [budget, setBudget] = useState(Number(localStorage.getItem('budget')) || 0 )
   const [isValidBudget, setIsValidBudget] = useState(false)
   const [modal, setModal] = useState(false)
   const [animateModal ,setAnimateModal] = useState(false)
@@ -20,7 +18,7 @@ function App() {
   const [filter, setFilter] = useState('')
   const [expensesFiltered, setExpensesFiltered] = useState([])
 
-  useEffect (() => {
+  useEffect(() => {
     if(Object.keys(editExpense).length > 0) {
       setModal(true)
 
@@ -28,28 +26,43 @@ function App() {
       setAnimateModal(true)
     }, 500);
     }
-  }, [editExpense] )
+  }, [editExpense])
 
-  useEffect (() => {
-    localStorage.setItem('budget', budget ?? 0)
+  useEffect(() => {
+    localStorage.setItem('budget', budget || 0)
   },[budget])
 
-  useEffect (() => {
-    localStorage.setItem('expenses',JSON.stringify(expenses) ?? [])
-  },[expenses])
+  const getExpenses = async () => {
+    try {
+      const existingExpenses = await axios.get(`${API_BASE_URL}/expenses`)
+      setExpenses(existingExpenses.data  || [])
+    } catch (error) {
+      setExpenses([])
+      console.error('Error getting expenses', error)
+    }
+  }
 
-  useEffect (() => {
+  useEffect(() => {
+    console.log('bugget ha cambiado')
+    if (isValidBudget) {
+      getExpenses()
+      console.log('expense geteadoos')
+    } 
+  }, [isValidBudget])
+
+  useEffect(() => {
    if (filter){
-    const expensesFiltered = expenses.filter(expense => expense.category === filter)
+    const expensesFiltered = expenses.filter(
+      (expense) => expense.category === filter
+    )
     setExpensesFiltered(expensesFiltered)
    }
-  },[filter])
+  }, [filter])
 
-  useEffect (() => {
-    const budgetLS = Number(localStorage.getItem('budget')) ?? 0
-    if (budgetLS>0) {
-      setIsValidBudget(true)
-    }
+  useEffect(() => {
+    const budgetLS = Number(localStorage.getItem('budget')) || 0
+    setIsValidBudget(budgetLS > 0)
+    console.log('bugget seteado')
   },[])
 
   const handleNewExpense = () => {
@@ -61,27 +74,31 @@ function App() {
     }, 500);
   }
 
-  const saveExpenses = expense => {
-    if(expense.id){
-      const updatedExpenses = expenses.map( (currentExpense) => currentExpense.id === expense.id ? expense : currentExpense)
-      setExpenses(updatedExpenses)
-    } else {
-      expense.id = generateId()
-      expense.date = Date.now()
-      setExpenses([...expenses, expense])
-      setEditExpense({})
-    }
-    
-    setAnimateModal(false)
-    setTimeout(() => {
+  const saveExpenses = async (expense) => {
+    try {
+      if(expense.id){
+        await axios.put(`${API_BASE_URL}/expenses/${expense.id}`, expense)
+      } else {
+      await axios.post(`${API_BASE_URL}/expenses`, expense);
+      }
+
+      setAnimateModal(false)
+      await new Promise((resolve) => setTimeout(resolve, 500))
       setModal(false)
-    }, 500);
+      setEditExpense({})
+      getExpenses()      
+    } catch (error) {
+      console.error('Error saving expenses', error)
+    }
   }
 
-  const deleteExpense = id => {
-   const updatedExpenses = expenses.filter( expense => expense.id !==id)
-   setExpenses(updatedExpenses)
+  const deleteExpense = async (id) => {
+    try {
+      await axios.delete(`${API_BASE_URL}/expenses/${id}`);
+    } catch (error) {
+      console.error('Error deleting expense', error);
   }
+}
 
   return (
     <div className={modal ? 'fijar' : ''}>
