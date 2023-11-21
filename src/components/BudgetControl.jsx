@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar'
@@ -8,7 +9,9 @@ const BudgetControl = ({
   setExpenses,
   budget,
   setBudget,
-  setIsValidBudget
+  setIsValidBudget,
+  tabSelected
+
 }) => {
 
   const [percentage, setPercentage] = useState(0)
@@ -29,10 +32,11 @@ const BudgetControl = ({
   },[expenses])
 
   const formatAmount = (amount) => {
-    return amount.toLocaleString('en-US', {
+    return amount ? 
+      amount.toLocaleString('en-US', {
       style: 'currency',
       currency: 'USD'
-     })
+     }) : ""
   }
 
   const handleResetApp = () => {
@@ -45,7 +49,8 @@ const BudgetControl = ({
   }
 
   return (
-    <div className='contenedor-presupuesto contenedor sombra dos-columnas'>
+    <>
+    <div className={`contenedor-presupuesto contenedor sombra-budget dos-columnas ${tabSelected ? 'no-top-left-border-radius' : ''}`}>
       <div>
         <CircularProgressbar
         styles={buildStyles({
@@ -74,8 +79,8 @@ const BudgetControl = ({
           <span>Spent: </span> {formatAmount(spent)}
         </p>
       </div>
-      
     </div>
+  </>
   )
 }
 
