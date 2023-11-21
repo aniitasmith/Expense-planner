@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 import BudgetControl from "./BudgetControl"
 import NewBudget from "./NewBudget"
@@ -8,12 +9,11 @@ const Header = ({
     budget,
     setBudget,
     isValidBudget,
-    setIsValidBudget
+    setIsValidBudget,
+    tabSelected,
 }) => {
   return (
     <header>
-      <h1>Expense Planner</h1>
-
       {isValidBudget ? (
         <BudgetControl
           expenses={expenses}
@@ -21,12 +21,13 @@ const Header = ({
           budget={budget}
           setBudget={setBudget}
           setIsValidBudget={setIsValidBudget}
+          tabSelected={tabSelected}
         ></BudgetControl>
       ) : (
       <NewBudget
         budget={budget}
         setBudget={setBudget}
-        setIsValidBudget={setIsValidBudget}
+        setIsValidBudget={setIsValidBudget}  
       />
       )}  
     </header>
