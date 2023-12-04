@@ -62,7 +62,6 @@ header h1 {
     color: var(--blanco);
     text-align: center;
     background-color: var(--azul);
-
     text-transform: uppercase;
 }
 
@@ -427,6 +426,17 @@ body .modal {
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: flex-start;
+    max-width: 80rem;
+    margin: 0 auto;
+    gap: 1px
+}
+
+
+@media only screen and (max-width:800px) {
+    .grupo-pestanas {
+        max-width: 80rem;
+        padding: 0 20px;
+    }
 }
 
 .tab:first-child{
@@ -468,11 +478,11 @@ body .modal {
 }
 
 .add-tab {
-    padding: 8px 16px;
+    padding: 4px 12px;
     cursor: pointer;
     background: #3b82f6;
     border: 1px solid  #3b82f6;
-    margin-right: 4px;
+    margin-bottom: 4px;
     color: #333;
     font-size: medium;
     font-weight: 400;
@@ -482,6 +492,9 @@ body .modal {
     align-content: center;
     justify-content: center;
     border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    line-height: 14px;
   }
 
   .add-tab:last-child{
@@ -541,4 +554,10 @@ body .modal {
   
   .checkbox-input:checked + .checkbox-custom::after {
     display: block;
+  }
+
+  .header-container {
+    /* position: relative;
+    width: 100%; */
+    background-color: var(--azul);
   }

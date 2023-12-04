@@ -13,7 +13,7 @@ const Header = ({
     tabSelected,
 }) => {
   return (
-    <header>
+    <header> 
       {isValidBudget ? (
         <BudgetControl
           expenses={expenses}
